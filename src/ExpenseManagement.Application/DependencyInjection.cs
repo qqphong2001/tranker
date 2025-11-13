@@ -3,6 +3,7 @@ using ExpenseManagement.Application.Budgets.Commands;
 using ExpenseManagement.Application.Budgets.Queries;
 using ExpenseManagement.Application.Categories.Commands;
 using ExpenseManagement.Application.Categories.Queries;
+using ExpenseManagement.Application.Common.Services;
 using ExpenseManagement.Application.Currencies.Commands;
 using ExpenseManagement.Application.Currencies.Queries;
 using ExpenseManagement.Application.Dashboard.Queries;
@@ -14,6 +15,7 @@ using ExpenseManagement.Application.Notifications.Commands;
 using ExpenseManagement.Application.Notifications.Queries;
 using ExpenseManagement.Application.RecurringTransactions.Commands;
 using ExpenseManagement.Application.RecurringTransactions.Queries;
+using ExpenseManagement.Application.Reports.Queries;
 using ExpenseManagement.Application.Subscriptions.Commands;
 using ExpenseManagement.Application.Subscriptions.Queries;
 using ExpenseManagement.Application.Tags.Commands;
@@ -33,6 +35,9 @@ public static class DependencyInjection
 
         // FluentValidation
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Services
+        services.AddScoped<IBudgetTrackingService, BudgetTrackingService>();
 
         // Command and Query Handlers
         // Expenses
@@ -92,6 +97,10 @@ public static class DependencyInjection
 
         // Dashboard
         services.AddScoped<GetDashboardDataQueryHandler>();
+
+        // Reports
+        services.AddScoped<ExportExpensesToPdfQueryHandler>();
+        services.AddScoped<ExportExpensesToExcelQueryHandler>();
 
         return services;
     }
