@@ -1,5 +1,6 @@
 using ExpenseManagement.Application.Common.Interfaces;
 using ExpenseManagement.Application.Common.Models;
+using ExpenseManagement.Application.Common.Services;
 using ExpenseManagement.Application.Expenses.DTOs;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,15 +11,18 @@ public class UpdateExpenseCommandHandler
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
     private readonly IDateTime _dateTime;
+    private readonly IBudgetTrackingService _budgetTrackingService;
 
     public UpdateExpenseCommandHandler(
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        IDateTime dateTime)
+        IDateTime dateTime,
+        IBudgetTrackingService budgetTrackingService)
     {
         _context = context;
         _currentUser = currentUser;
         _dateTime = dateTime;
+        _budgetTrackingService = budgetTrackingService;
     }
 
     public async Task<Result> Handle(UpdateExpenseDto request, CancellationToken cancellationToken)
@@ -29,6 +33,8 @@ public class UpdateExpenseCommandHandler
 
         if (expense == null)
             return Result.Failure("Expense not found");
+
+        var oldCategoryId = expense.CategoryId;
 
         expense.Amount = request.Amount;
         expense.Description = request.Description;
@@ -52,6 +58,20 @@ public class UpdateExpenseCommandHandler
         }
 
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Update budget spent amounts for both old and new category (if changed)
+        await _budgetTrackingService.UpdateBudgetSpentAmountsAsync(
+            _currentUser.UserId!,
+            request.CategoryId,
+            cancellationToken);
+
+        if (oldCategoryId != request.CategoryId)
+        {
+            await _budgetTrackingService.UpdateBudgetSpentAmountsAsync(
+                _currentUser.UserId!,
+                oldCategoryId,
+                cancellationToken);
+        }
 
         return Result.Success();
     }

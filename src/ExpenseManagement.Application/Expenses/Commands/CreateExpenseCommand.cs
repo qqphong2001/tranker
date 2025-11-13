@@ -1,5 +1,6 @@
 using ExpenseManagement.Application.Common.Interfaces;
 using ExpenseManagement.Application.Common.Models;
+using ExpenseManagement.Application.Common.Services;
 using ExpenseManagement.Application.Expenses.DTOs;
 using ExpenseManagement.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,15 +12,18 @@ public class CreateExpenseCommandHandler
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
     private readonly IDateTime _dateTime;
+    private readonly IBudgetTrackingService _budgetTrackingService;
 
     public CreateExpenseCommandHandler(
         IApplicationDbContext context,
         ICurrentUserService currentUser,
-        IDateTime dateTime)
+        IDateTime dateTime,
+        IBudgetTrackingService budgetTrackingService)
     {
         _context = context;
         _currentUser = currentUser;
         _dateTime = dateTime;
+        _budgetTrackingService = budgetTrackingService;
     }
 
     public async Task<Result<Guid>> Handle(CreateExpenseDto request, CancellationToken cancellationToken)
@@ -51,6 +55,12 @@ public class CreateExpenseCommandHandler
 
         _context.Expenses.Add(expense);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Update budget spent amounts
+        await _budgetTrackingService.UpdateBudgetSpentAmountsAsync(
+            _currentUser.UserId!,
+            request.CategoryId,
+            cancellationToken);
 
         return Result<Guid>.Success(expense.Id);
     }
