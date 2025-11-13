@@ -1,0 +1,40 @@
+using ExpenseManagement.Application.Common.Interfaces;
+using ExpenseManagement.Application.Common.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace ExpenseManagement.Application.Notifications.Commands;
+
+public class MarkNotificationAsReadCommandHandler
+{
+    private readonly IApplicationDbContext _context;
+    private readonly ICurrentUserService _currentUser;
+    private readonly IDateTime _dateTime;
+
+    public MarkNotificationAsReadCommandHandler(
+        IApplicationDbContext context,
+        ICurrentUserService currentUser,
+        IDateTime dateTime)
+    {
+        _context = context;
+        _currentUser = currentUser;
+        _dateTime = dateTime;
+    }
+
+    public async Task<Result> Handle(Guid id, CancellationToken cancellationToken)
+    {
+        var notification = await _context.Notifications
+            .FirstOrDefaultAsync(n => n.Id == id && n.UserId == _currentUser.UserId, cancellationToken);
+
+        if (notification == null)
+            return Result.Failure("Notification not found");
+
+        notification.IsRead = true;
+        notification.ReadAt = _dateTime.UtcNow;
+        notification.UpdatedAt = _dateTime.UtcNow;
+        notification.UpdatedBy = _currentUser.Email;
+
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return Result.Success();
+    }
+}
