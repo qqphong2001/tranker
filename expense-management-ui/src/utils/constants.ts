@@ -9,6 +9,10 @@ export const ROUTES = {
   INCOMES: '/incomes',
   SUBSCRIPTIONS: '/subscriptions',
   BUDGETS: '/budgets',
+  CATEGORIES: '/categories',
+  TAGS: '/tags',
+  RECURRING_TRANSACTIONS: '/recurring-transactions',
+  NOTIFICATIONS: '/notifications',
   REPORTS: '/reports',
   SETTINGS: '/settings',
 };

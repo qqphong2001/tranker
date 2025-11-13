@@ -5,8 +5,12 @@ const navigation = [
   { name: 'Dashboard', href: ROUTES.DASHBOARD, icon: '📊' },
   { name: 'Expenses', href: ROUTES.EXPENSES, icon: '💸' },
   { name: 'Incomes', href: ROUTES.INCOMES, icon: '💰' },
-  { name: 'Subscriptions', href: ROUTES.SUBSCRIPTIONS, icon: '🔄' },
   { name: 'Budgets', href: ROUTES.BUDGETS, icon: '🎯' },
+  { name: 'Subscriptions', href: ROUTES.SUBSCRIPTIONS, icon: '🔄' },
+  { name: 'Recurring', href: ROUTES.RECURRING_TRANSACTIONS, icon: '🔁' },
+  { name: 'Categories', href: ROUTES.CATEGORIES, icon: '📁' },
+  { name: 'Tags', href: ROUTES.TAGS, icon: '🏷️' },
+  { name: 'Notifications', href: ROUTES.NOTIFICATIONS, icon: '🔔' },
   { name: 'Reports', href: ROUTES.REPORTS, icon: '📈' },
   { name: 'Settings', href: ROUTES.SETTINGS, icon: '⚙️' },
 ];
