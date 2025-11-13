@@ -41,6 +41,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         builder.ApplyConfiguration(new CategoryConfiguration());
         builder.ApplyConfiguration(new BudgetConfiguration());
         builder.ApplyConfiguration(new SubscriptionConfiguration());
+        builder.ApplyConfiguration(new TagConfiguration());
+        builder.ApplyConfiguration(new NotificationConfiguration());
+        builder.ApplyConfiguration(new CurrencyConfiguration());
+        builder.ApplyConfiguration(new RecurringTransactionConfiguration());
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
